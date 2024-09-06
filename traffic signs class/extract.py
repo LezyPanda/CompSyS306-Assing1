@@ -1,7 +1,7 @@
 from PIL import Image
 import os
 
-path = "C:\\Users\\flole\\Downloads\\traffic-signs-classification\\myData"
+path = "\\traffic-signs-classification\\myData"
 
 i=0
 # r=root, d=directories, f = files
