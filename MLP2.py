@@ -12,21 +12,6 @@ from tensorflow.keras.layers import Flatten, Dense
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 import csv
 import torch
-print(f'TF version: {tf.__version__}')
-
-print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
-tf.debugging.set_log_device_placement(True)
-
-gpus = tf.config.experimental.list_physical_devices('GPU')
-
-if gpus:
-    # Extract the GPU indices from the device names
-    gpu_indices = [int(gpu.name.split(':')[-1]) for gpu in gpus]
-    print("GPU Indices:", gpu_indices)
-else:
-    print("No GPUs available in your system.")
-
-
 
 
 # Load the CSV file containing labels
@@ -78,7 +63,7 @@ model = Sequential([
     Dense(256, activation='sigmoid'),
     Dense(128, activation='sigmoid'),
     Dense(43, activation='softmax')  # Adjust output layer to match the number of classes
-]).to(device)
+])
 
 model.summary()
 model.compile(optimizer='adam',
