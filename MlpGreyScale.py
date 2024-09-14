@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split
 import PIL
 from skimage.io import imread
 from skimage.transform import resize
+from skimage.color import rgb2gray
 from keras import Sequential
 from keras.layers import Flatten, Dense, Input
 from keras.losses import CategoricalCrossentropy
@@ -31,7 +32,8 @@ def load_and_process_images(data_dir, labels_csv):
         for img_name in img_names:
             img_path = os.path.join(folder_path, img_name)
             img_array = imread(img_path)
-            img_resized = resize(img_array, (28, 28, 3))  # Resize images to 28x28x3
+            img_gray = rgb2gray(img_array)  # Convert to grayscale
+            img_resized = resize(img_gray, (28, 28, 1))  # Resize images to 28x28x1
             images.append(img_resized)
             labels.append(to_categorical(categories.index(category), num_classes=43))  # One-hot encode the labels
         print(f'loaded category:{category} successfully')
@@ -39,7 +41,7 @@ def load_and_process_images(data_dir, labels_csv):
     return np.array(images), np.array(labels)
 
 # Path to the pickle file
-pickle_file = 'images_labels_mlp.pkl'
+pickle_file = 'images_labels_mlp2.pkl'
 
 # Check if the pickle file exists
 if os.path.exists(pickle_file):
@@ -63,7 +65,7 @@ x_train, x_test, y_train, y_test = train_test_split(images, labels, test_size=0.
 
 # Define the model
 model = Sequential([
-    Flatten(input_shape=(28, 28, 3)),
+    Flatten(input_shape=(28, 28, 1)),
     Dense(256, activation='sigmoid'),
     Dense(128, activation='sigmoid'),
     Dense(43, activation='softmax')  # Adjust output layer to match the number of classes
@@ -83,7 +85,7 @@ times = []
 # Train the model
 for epoch in range(10):
     start_time = time.time()
-    history = model.fit(x_train, y_train, validation_split=0.2, epochs=1, batch_size= 128,verbose=1)
+    history = model.fit(x_train, y_train, validation_split=0.2, epochs=1, verbose=1)
     end_time = time.time()
     
     train_loss = history.history['loss'][0]
@@ -142,7 +144,7 @@ predicted_labels = np.argmax(model.predict(test_images), axis=1)
 plt.figure(figsize=(10, 10))
 for i in range(num_images_to_show):
     plt.subplot(1, num_images_to_show, i + 1)
-    plt.imshow(test_images[i])
+    plt.imshow(test_images[i].reshape(28, 28), cmap='gray')  # Reshape and set colormap to gray
     plt.title(f"True: {true_labels[i]}\nPred: {predicted_labels[i]}")
     plt.axis('off')
 plt.show()
