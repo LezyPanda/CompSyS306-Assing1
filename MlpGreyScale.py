@@ -10,10 +10,9 @@ import PIL
 from skimage.io import imread
 from skimage.transform import resize
 from skimage.color import rgb2gray
+import keras
 from keras import Sequential
-from keras.layers import Flatten, Dense, Input
-from keras.losses import CategoricalCrossentropy
-from keras.utils import to_categorical
+
 import matplotlib.pyplot as plt
 import pickle
 
@@ -35,7 +34,7 @@ def load_and_process_images(data_dir, labels_csv):
             img_gray = rgb2gray(img_array)  # Convert to grayscale
             img_resized = resize(img_gray, (28, 28, 1))  # Resize images to 28x28x1
             images.append(img_resized)
-            labels.append(to_categorical(categories.index(category), num_classes=43))  # One-hot encode the labels
+            labels.append(keras.utils.to_categorical(categories.index(category), num_classes=43))  # One-hot encode the labels
         print(f'loaded category:{category} successfully')
     
     return np.array(images), np.array(labels)
@@ -65,14 +64,14 @@ x_train, x_test, y_train, y_test = train_test_split(images, labels, test_size=0.
 
 # Define the model
 model = Sequential([
-    Flatten(input_shape=(28, 28, 1)),
-    Dense(256, activation='sigmoid'),
-    Dense(128, activation='sigmoid'),
-    Dense(43, activation='softmax')  # Adjust output layer to match the number of classes
+    keras.layers.Flatten(input_shape=(28, 28, 1)),
+    keras.layers.Dense(256, activation='sigmoid'),
+    keras.layers.Dense(128, activation='sigmoid'),
+    keras.layers.Dense(43, activation='softmax')  # Adjust output layer to match the number of classes
 ])
 model.summary()
 model.compile(optimizer='adam',
-              loss=CategoricalCrossentropy(from_logits=False),  # Use CategoricalCrossentropy for one-hot encoded labels
+              loss=keras.losses.CategoricalCrossentropy(from_logits=False),  # Use CategoricalCrossentropy for one-hot encoded labels
               metrics=['accuracy'])
 
 # Lists to store metrics
