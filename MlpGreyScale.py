@@ -12,7 +12,7 @@ from skimage.transform import resize
 from skimage.color import rgb2gray
 import keras
 from keras import Sequential
-
+import joblib
 import matplotlib.pyplot as plt
 import pickle
 
@@ -147,3 +147,9 @@ for i in range(num_images_to_show):
     plt.title(f"True: {true_labels[i]}\nPred: {predicted_labels[i]}")
     plt.axis('off')
 plt.show()
+
+# Function to save the model and testing data
+# Save the test data and the model using joblib
+joblib.dump((x_test, y_test), 'mlp_test_data.joblib')
+joblib.dump(model, 'mlp_model.joblib')
+print("Test data and model saved in joblib format.")

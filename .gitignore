@@ -2,3 +2,4 @@
 images_labels.pkl
 images_labels_svm.pkl
 *.pkl
+*.joblib

@@ -2,19 +2,14 @@ import os
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
 import pandas as pd
-import tensorflow as tf
 import numpy as np
 from sklearn import svm
 from skimage.io import imread
 from skimage.transform import resize
 from sklearn.model_selection import GridSearchCV, train_test_split
-from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, recall_score, f1_score
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
-from PIL import Image
+from sklearn.metrics import accuracy_score, recall_score, f1_score,precision_score
 import pickle
-import time
-import random
+import joblib
 
 def load_and_process_images(data_dir, labels_csv):
     flat_data_arr = []
@@ -77,3 +72,8 @@ print('The accuracy of the model is:', model.score(x_test, y_test) * 100, '%')
 y_pred = model.predict(x_test)
 print('The accuracy score of the model is:', accuracy_score(y_test, y_pred))
 print('The recall score of the model is:', recall_score(y_test, y_pred, average='weighted'))
+
+# Save the test data and the model using joblib
+joblib.dump((x_test, y_test), 'svm_test_data.joblib')
+joblib.dump(model, 'svm_model.joblib')
+print("Test data and model saved in joblib format.")
