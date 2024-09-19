@@ -1,0 +1,5 @@
+/traffic signs class/myData/
+images_labels.pkl
+images_labels_svm.pkl
+*.pkl
+*.joblib
