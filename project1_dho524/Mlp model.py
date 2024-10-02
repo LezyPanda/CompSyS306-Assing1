@@ -29,11 +29,14 @@ def load_and_process_images(data_dir, labels_csv):
         img_names = os.listdir(folder_path)
         for img_name in img_names:
             img_path = os.path.join(folder_path, img_name)
-            img_array = imread(img_path)
-            img_gray = rgb2gray(img_array)  # Convert to grayscale
-            img_resized = resize(img_gray, (28, 28))  # Resize images to 28x28
-            flat_data_arr.append(img_resized.flatten())
-            target_arr.append(categories.index(category))
+            if os.path.isfile(img_path):  # Check if img_path is a file
+                img_array = imread(img_path)
+                img_gray = rgb2gray(img_array)  # Convert to grayscale
+                img_resized = resize(img_gray, (120, 120))  # Resize images to 120x120
+                flat_data_arr.append(img_resized.flatten())
+                target_arr.append(categories.index(category))
+            else:
+                print(f'Skipping {img_path}, not a file.')
         print(f'loaded category:{category} successfully')
 
     flat_data = np.array(flat_data_arr)
@@ -52,8 +55,8 @@ if os.path.exists(pickle_file):
     print("Loaded images.")
 else:
     # Load and process images from the folders
-    labels_csv = 'traffic signs class/labels.csv'
-    data_dir = 'traffic signs class/myData'
+    labels_csv = 'road f/label.csv'
+    data_dir = 'road f/myData'
     df = load_and_process_images(data_dir, labels_csv)
     
     # Save the images and labels
@@ -86,7 +89,8 @@ val_accuracies = []
 times = []
 
 # Train the model
-for epoch in range(10):
+num_epochs = 30
+for epoch in range(num_epochs):
     start_time = time.time()
     history = model.fit(x_train, y_train, validation_split=0.2, epochs=1)
     end_time = time.time()
@@ -108,7 +112,7 @@ test_loss, test_acc = model.evaluate(x_test, y_test, verbose=2)
 print('\nTest accuracy:', test_acc)
 
 # Plotting the metrics
-epochs = range(1, 11)
+epochs = range(1, num_epochs + 1)
 
 plt.figure(figsize=(12, 4))
 
@@ -147,7 +151,7 @@ predicted_labels = np.argmax(model.predict(test_images), axis=1)
 plt.figure(figsize=(10, 10))
 for i in range(num_images_to_show):
     plt.subplot(1, num_images_to_show, i + 1)
-    plt.imshow(test_images[i].reshape(28, 28), cmap='gray')  
+    plt.imshow(test_images[i].reshape(120, 120), cmap='gray')  # Reshape to 120x120
     plt.title(f"True: {true_labels[i]}\nPred: {predicted_labels[i]}")
     plt.axis('off')
 plt.show()

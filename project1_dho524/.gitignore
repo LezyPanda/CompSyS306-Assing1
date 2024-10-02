@@ -1,4 +1,5 @@
 /traffic signs class/myData/
+/road f/myData/
 images_labels.pkl
 images_labels_svm.pkl
 *.pkl

@@ -49,8 +49,8 @@ if os.path.exists(pickle_file):
     print("Loaded images.")
 else:
     # Load and process images from the folders
-    labels_csv = 'traffic signs class/labels.csv'
-    data_dir = 'traffic signs class/myData'
+    labels_csv = 'road f/label.csv'
+    data_dir = 'road f/myData'
     df = load_and_process_images(data_dir, labels_csv)
     
     # Save the images and labels
