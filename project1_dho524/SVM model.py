@@ -28,7 +28,7 @@ def load_and_process_images(data_dir, labels_csv):
             img_path = os.path.join(folder_path, img_name)
             img_array = imread(img_path)
             img_gray = rgb2gray(img_array)  # Convert to grayscale
-            img_resized = resize(img_gray, (28, 28))  # Resize images to 28x28
+            img_resized = resize(img_gray, (120, 120))  # Resize images to 28x28
             flat_data_arr.append(img_resized.flatten())
             target_arr.append(categories.index(category))
         print(f'loaded category:{category} successfully')
@@ -65,7 +65,7 @@ y = df.iloc[:, -1]
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.20)
 
 # define hyperparameters and fit
-model = svm.SVC(C=1, kernel="linear").fit(x_train, y_train)
+model = svm.SVC(kernel="linear").fit(x_train, y_train)
 
 print('The accuracy of the model is:', model.score(x_test, y_test) * 100, '%')
 y_pred = model.predict(x_test)
