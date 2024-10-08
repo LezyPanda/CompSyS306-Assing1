@@ -13,6 +13,7 @@ import keras
 from keras import Sequential
 import joblib
 import matplotlib.pyplot as plt
+import cv2
 import pickle
 
 # Function to load and process images
@@ -31,9 +32,9 @@ def load_and_process_images(data_dir, labels_csv):
             img_path = os.path.join(folder_path, img_name)
             if os.path.isfile(img_path):  # Check if img_path is a file
                 img_array = imread(img_path)
-                img_gray = rgb2gray(img_array)  # Convert to grayscale
-                img_resized = resize(img_gray, (120, 120))  # Resize images to 120x120
-                flat_data_arr.append(img_resized.flatten())
+                #img_gray = cv2.cvtColor(img_array, cv2.COLOR_BGR2GRAY)
+                #img_resized = resize(img_gray, (120, 120))  # Resize images to 120x120
+                flat_data_arr.append(img_array.flatten())
                 target_arr.append(categories.index(category))
             else:
                 print(f'Skipping {img_path}, not a file.')
@@ -72,10 +73,11 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.20)
 
 # Define the model
 model = Sequential([
-    keras.layers.Dense(256, activation='relu'),
+    keras.layers.Dense(256, activation='relu', input_shape=(x_train.shape[1],)),  # Specify input_shape in the first layer
     keras.layers.Dense(128, activation='relu'),
-    keras.layers.Dense(43, activation='softmax')  
+    keras.layers.Dense(5, activation='softmax')  
 ])
+
 model.summary()
 model.compile(optimizer='adam',
               loss=keras.losses.SparseCategoricalCrossentropy(from_logits=False),
@@ -142,21 +144,25 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 
-# Show a few test images with their predicted labels
-num_images_to_show = 5
-test_images = x_test[:num_images_to_show].to_numpy()  
-true_labels = y_test[:num_images_to_show].to_numpy()  
+# Number of images to show
+num_images_to_show = 25
+
+# Select the first 25 images and their corresponding labels
+test_images = x_test[:num_images_to_show].to_numpy()
+true_labels = y_test[:num_images_to_show].to_numpy()
 predicted_labels = np.argmax(model.predict(test_images), axis=1)
 
-plt.figure(figsize=(10, 10))
+# Create a figure with a 5x5 grid of subplots
+plt.figure(figsize=(15, 15))
 for i in range(num_images_to_show):
-    plt.subplot(1, num_images_to_show, i + 1)
-    plt.imshow(test_images[i].reshape(120, 120), cmap='gray')  # Reshape to 120x120
+    plt.subplot(5, 5, i + 1)
+    plt.imshow(test_images[i].reshape(120, 120, 3))  # Reshape to 120x120x3 for color
+    #plt.imshow(test_images[i].reshape(120, 120), cmap='gray')  # Reshape to 120x120
     plt.title(f"True: {true_labels[i]}\nPred: {predicted_labels[i]}")
     plt.axis('off')
 plt.show()
 
 # Save the test data and model
 joblib.dump((x_test, y_test), 'mlp_test_data.joblib')
-joblib.dump(model, 'mlp_model.joblib')
-print("Test data and model saved in joblib format.")
+model.save('mlp_model.keras')  # Save the model using Keras's save method
+print("Test data saved in joblib format and model saved in H5 format.")

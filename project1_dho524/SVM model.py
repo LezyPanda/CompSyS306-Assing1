@@ -10,6 +10,7 @@ from skimage.color import rgb2gray
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.metrics import accuracy_score, recall_score, f1_score, precision_score
 import pickle
+import cv2
 import joblib
 
 # Function to load and process images
@@ -27,9 +28,10 @@ def load_and_process_images(data_dir, labels_csv):
         for img_name in img_names:
             img_path = os.path.join(folder_path, img_name)
             img_array = imread(img_path)
-            img_gray = rgb2gray(img_array)  # Convert to grayscale
-            img_resized = resize(img_gray, (120, 120))  # Resize images to 28x28
-            flat_data_arr.append(img_resized.flatten())
+            #img_gray = rgb2gray(img_array)  # Convert to grayscale
+            #img_resized = resize(img_gray, (120, 120))  # Resize images to 28x28
+            img_gray = cv2.cvtColor(img_array, cv2.COLOR_BGR2GRAY)
+            flat_data_arr.append(img_gray.flatten())
             target_arr.append(categories.index(category))
         print(f'loaded category:{category} successfully')
 
@@ -74,4 +76,4 @@ print('The recall score of the model is:', recall_score(y_test, y_pred, average=
 
 # Save test and model
 joblib.dump((x_test, y_test), 'svm_test_data.joblib')
-joblib.dump(model, 'svm_model.joblib')
+joblib.dump(model, 'svm_model.keras')
